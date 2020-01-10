@@ -1,0 +1,138 @@
+#*******
+# 1. get bedfile of all ccREs
+# from: http://screen.encodeproject.org/
+# "Downloads" - 5 group hg19
+gunzip ENCFF788SJC.bed.gz
+#*******
+
+#*******
+# 2. select ELS regions
+awk '$NF=="255,205,0"' ENCFF788SJC.bed | cut -f-4 > ELS.enhancers.bed
+#*******
+
+#******
+# 3. merge info regarding
+# classification of 991173 ELS regions
+# across adult samples 
+awk 'BEGIN{FS="\t"; OFS="_"}{print $1, $2, $3, $4}' ELS.enhancers.bed | sed '1iregion' > merged.table.tsv 
+cut -f1,3,5 5-group.ccREs.hg19.bigBed.txt | awk 'BEGIN{FS=OFS="\t"}$3=="adult"{print $1}' | while read file_id; do conda activate ENCODE_RC; bigBedToBed bigBed.files/hg19/"$file_id".bigBed tmp.bed; conda deactivate; ~/bin/join.py -b merged.table.tsv -a <(awk 'BEGIN{FS="\t"; OFS="_"}{print $1, $2, $3, $4"\t"$NF}' tmp.bed) --b_header > tmp2; awk -v file_id="$file_id" 'BEGIN{FS=OFS="\t"}{if(NR==1){$NF=file_id}; print $0}' tmp2 > merged.table.tsv; rm tmp2; rm tmp.bed; done
+#******
+
+#******
+# 4. convert the above table
+# into a binary table
+cat merged.table.tsv | awk 'BEGIN{FS=OFS="\t"}{if (NR==1){print $0} else {for (i=2; i<=NF; i++){if ($i=="255,205,0"){$i=1}else {$i=0}}; print $0}}' > tmp; mv tmp merged.table.tsv
+#******
+
+#******
+# 5. to generate dist.Rdata
+# check commands 1-3 of /no_backup/rg/bborsari/projects/enhancers_neural_development/bin/figures/figure.3.mds.R 
+#******
+
+#******
+# 6. prepare folders for analyses
+# analysis.all: the allowed non-group sample
+# is defined w/ respect to all 60
+# adult tissues for which ccREs are available from ENCODE
+cut -f1 tissues.groups.tsv | while read group; do mkdir -p analysis/"$group" analysis.all/"$group"; done
+#******
+
+#******
+# 7. subset merged table to keep only the 25 selected tissues
+awk '$1=="common"' tissues.groups.tsv | while read group tissues ids tot req other; do cols=$(grep -Ff <(echo $ids | sed 's/:/\n/g;s/\"//g') <(head -1 merged.table.tsv | awk '{for (i=1;i<=NF;i++){print i"\t"$i}}') | cut -f1 | awk 'BEGIN{a=""}{if (a==""){a=a""$1} else {a=a","$1}}END{print a}'); cut -f1,$cols merged.table.tsv; done > merged.table.subset.tsv
+#******
+
+#******
+# 8. generate bedfile of group-specific ELS
+# as those classified as ELS in at least 80% of a group samples
+# and at most 0 (iPS/fibro_myoblasts) or 1 other non-group samples (blood/brain/mesoderm)
+
+# 8.1 - analysis 
+awk '$1!="common"' tissues.groups.tsv | while read group tissues ids tot req other; do cols=$(grep -Ff <(echo $ids | sed 's/:/\n/g;s/\"//g') <(head -1 merged.table.subset.tsv | awk '{for (i=1;i<=NF;i++){print i"\t"$i}}') | cut -f1 | awk 'BEGIN{a=""}{if (a==""){a=a""$1} else {a=a","$1}}END{print a}'); ~/bin/selectRows.sh <(cut -f1,"$cols" merged.table.subset.tsv | awk -v req="$req" 'BEGIN{FS=OFS="\t"}{n=0; for (i=2;i<=NF;i++){if ($i==1){n++}}; if (n>=req){print $1}}') <(cut --complement -f"$cols" merged.table.subset.tsv) | awk 'BEGIN{FS=OFS="\t"}{n=0; for (i=2;i<=NF;i++){if ($i==1){n++}}; print $1, n}' | awk -v other="$other" 'BEGIN{FS=OFS="\t"}$2<=other{split($1, a, "_"); print a[1], a[2], a[3], a[4]}' > analysis/"$group"/"$group".ELS.bed; done
+
+# 8.2 - analysis.all
+awk '$1!="common"' tissues.groups.tsv | while read group tissues ids tot req other; do cols=$(grep -Ff <(echo $ids | sed 's/:/\n/g;s/\"//g') <(head -1 merged.table.tsv | awk '{for (i=1;i<=NF;i++){print i"\t"$i}}') | cut -f1 | awk 'BEGIN{a=""}{if (a==""){a=a""$1} else {a=a","$1}}END{print a}'); ~/bin/selectRows.sh <(cut -f1,"$cols" merged.table.tsv | awk -v req="$req" 'BEGIN{FS=OFS="\t"}{n=0; for (i=2;i<=NF;i++){if ($i==1){n++}}; if (n>=req){print $1}}') <(cut --complement -f"$cols" merged.table.tsv) | awk 'BEGIN{FS=OFS="\t"}{n=0; for (i=2;i<=NF;i++){if ($i==1){n++}}; print $1, n}' | awk -v other="$other" 'BEGIN{FS=OFS="\t"}$2<=other{split($1, a, "_"); print a[1], a[2], a[3], a[4]}' > analysis.all/"$group"/"$group".ELS.bed; done
+#******
+
+#******
+# 9. generate bedfile of common ELS
+# as those classified as ELS in 100% of the samples
+awk '$1=="common"' tissues.groups.tsv | while read group tissues ids tot req other; do cols=$(grep -Ff <(echo $ids | sed 's/:/\n/g;s/\"//g') <(head -1 merged.table.subset.tsv | awk '{for (i=1;i<=NF;i++){print i"\t"$i}}') | cut -f1 | awk 'BEGIN{a=""}{if (a==""){a=a""$1} else {a=a","$1}}END{print a}'); cut -f1,"$cols" merged.table.subset.tsv | awk -v req="$req" 'BEGIN{FS=OFS="\t"}{n=0; for (i=2;i<=NF;i++){if ($i==1){n++}}; if (n>=req){print $1}}' | awk 'BEGIN{FS=OFS="\t"}{split($1, a, "_"); print a[1], a[2], a[3], a[4]}' > analysis/"$group"/"$group".ELS.bed; done
+cp analysis/"$group"/"$group".ELS.bed analysis.all/"$group"/"$group".ELS.bed
+#******
+
+#******
+# 10. load conda environment
+conda activate ENCODE_RC
+#******
+
+#******
+# 11. generate bedfiles of ELS with min. distance 
+# from all annotated TSS of 1, 1.5, 2 Kb (up/downstream)
+cut -f1 tissues.groups.tsv | while read group; do for folder in analysis analysis.all; do for dist in 1Kb 1.5.Kb 2Kb; do bedtools intersect -a "$folder"/"$group"/"$group".ELS.bed -b ../TSS.bedfiles/gencode.v19.all.genes.non.redundant.TSSs."$dist".upstream.downstream.bed -v > "$folder"/"$group"/"$group".ELS.distal."$dist".bed; done; done; done
+#******
+
+#******
+# 12. prepare folders to store results 
+# from intersection between ELS and introns / exons / intergenic regions
+cut -f1 tissues.groups.tsv | while read group; do for folder in analysis analysis.all; do mkdir -p "$folder"/"$group"/intronic "$folder"/"$group"/exonic "$folder"/"$group"/intergenic; done; done
+#******
+
+#******
+# 13. compute intersection between ELS and introns / exons / intergenic regions
+cut -f1 tissues.groups.tsv | while read group; do 
+	for folder in analysis analysis.all; do
+
+		# 13.1 - intersection w/ introns
+		# 13.1.1 - min. distance from TSS = 0
+		bedtools intersect -a "$folder"/"$group"/"$group".ELS.bed -b gencode.v19.introns.bed -u > "$folder"/"$group"/intronic/"$group".ELS.bed
+
+		# 13.1.2 - min. distance from TSS of 1, 1.5 and 2 Kb
+		for dist in 1Kb 1.5.Kb 2Kb; do
+			bedtools intersect -a "$folder"/"$group"/"$group".ELS.distal."$dist".bed -b gencode.v19.introns.bed -u > "$folder"/"$group"/intronic/"$group".ELS.distal."$dist".bed
+		done
+
+
+		# 13.2 - intersection w/ exons 
+		# 13.2.1 - min. distance from TSS = 0
+		bedtools intersect -a "$folder"/"$group"/"$group".ELS.bed -b gencode.v19.exons.bed -u > "$folder"/"$group"/exonic/"$group".ELS.bed
+
+		# 13.2.2 - min. distance from TSS of 1, 1.5 and 2 Kb
+		for dist in 1Kb 1.5.Kb 2Kb; do
+			bedtools intersect -a "$folder"/"$group"/"$group".ELS.distal."$dist".bed -b gencode.v19.exons.bed -u > "$folder"/"$group"/exonic/"$group".ELS.distal."$dist".bed
+		done
+
+
+		# 13.3 - intersection w/ intergenic regions
+		# 13.3.1 - min. distance from TSS = 0
+		bedtools intersect -a "$folder"/"$group"/"$group".ELS.bed -b gencode.v19.all.genes.gene.body.bed -v > "$folder"/"$group"/intergenic/"$group".ELS.bed
+		
+		# 13.3.2 - min. distance from TSS of 1, 1.5 and 2 Kb
+		for dist in 1Kb 1.5.Kb 2Kb; do
+			bedtools intersect -a "$folder"/"$group"/"$group".ELS.distal."$dist".bed -b gencode.v19.all.genes.gene.body.bed -v > "$folder"/"$group"/intergenic/"$group".ELS.distal."$dist".bed
+		done
+	done
+done
+#******
+
+#******
+# 14. summary stats
+for type in intronic exonic intergenic; do
+	for folder in analysis analysis.all; do
+		cut -f1 tissues.groups.tsv | while read group; do
+			
+			# 14.1 - min. distance from TSS = 0
+			total=$(awk 'BEGIN{n=0}{n++}END{print n}' "$folder"/"$group"/"$group".ELS.bed)
+			fraction=$(awk 'BEGIN{n=0}{n++}END{print n}' "$folder"/"$group"/"$type"/"$group".ELS.bed)
+			echo -e "$total\t$fraction\t$group\t0"
+			
+			# 14.2 - min. distance from TSS of 1, 1.5 and 2 Kb
+			for dist in 1Kb 1.5.Kb 2Kb; do
+				total=$(awk 'BEGIN{n=0}{n++}END{print n}' "$folder"/"$group"/"$group".ELS.distal."$dist".bed)
+				fraction=$(awk 'BEGIN{n=0}{n++}END{print n}' "$folder"/"$group"/"$type"/"$group".ELS.distal."$dist".bed)
+				echo -e "$total\t$fraction\t$group\t$dist"
+			done
+		done >> "$folder"/intersection."$type".tsv
+	done
+done
+#****** 
