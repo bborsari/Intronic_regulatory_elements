@@ -1,0 +1,13 @@
+#********
+# 1. retrieve non-redundant TSSs
+~/bin/non.redundant.TSS.sh /users/rg/projects/references/Annotation/H.sapiens/gencode19/gencode.v19.annotation.gtf > gencode.v19.all.genes.non.redundant.TSSs.bed
+
+## +- 2 Kb
+awk 'BEGIN{FS=OFS="\t"}{if ($6=="+"){$3=($2+2000); $2=($2-2000)} else {$2=($3-2000); $3=($3+2000)}; print $0}' gencode.v19.all.genes.non.redundant.TSSs.bed | awk 'BEGIN{FS=OFS="\t"}{if ($2<0){$2=0}; print $0}' > gencode.v19.all.genes.non.redundant.TSSs.2Kb.upstream.downstream.bed
+
+## +- 1 Kb
+awk 'BEGIN{FS=OFS="\t"}{if ($6=="+"){$3=($2+1000); $2=($2-1000)} else {$2=($3-1000); $3=($3+1000)}; print $0}' gencode.v19.all.genes.non.redundant.TSSs.bed | awk 'BEGIN{FS=OFS="\t"}{if ($2<0){$2=0}; print $0}' > gencode.v19.all.genes.non.redundant.TSSs.1Kb.upstream.downstream.bed
+
+## +- 1.5 Kb
+awk 'BEGIN{FS=OFS="\t"}{if ($6=="+"){$3=($2+1500); $2=($2-1500)} else {$2=($3-1500); $3=($3+1500)}; print $0}' gencode.v19.all.genes.non.redundant.TSSs.bed | awk 'BEGIN{FS=OFS="\t"}{if ($2<0){$2=0}; print $0}' > gencode.v19.all.genes.non.redundant.TSSs.1.5.Kb.upstream.downstream.bed
+#********
