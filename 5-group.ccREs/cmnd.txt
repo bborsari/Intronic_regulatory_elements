@@ -1,0 +1,62 @@
+#********
+# 1. download metadata
+/no_backup/rg/bborsari/projects/ENCODE/RNA-Chromatin/bin/download.metadata.sh "https://www.encodeproject.org/metadata/type%3DAnnotation%26annotation_type%3Dcandidate%2BCis-Regulatory%2BElements/metadata.tsv"
+#********
+
+#********
+# 2. check no entry has Audit_ERRORs
+awk 'BEGIN{FS="\t"}{print $NF}' metadata.tsv | sort | uniq -c
+#********
+
+#********
+# 3. check all entries have the same number of columns
+awk 'BEGIN{FS="\t"}{print NF}' metadata.tsv | sort | uniq -c
+#********
+
+#********
+# 4. retrieve list of files 
+# corresponding to 5-group ccREs 
+# defined with at least K27ac and K4me3
+
+## human (hg19)
+awk 'BEGIN{FS=OFS="\t"}$2=="bigBed_bed3+" && $22=="hg19" && $24=="released" && ($15 == "H3K27ac-human,_H3K4me3-human" || $15 == "H3K27ac-human,_CTCF-human,_H3K4me3-human" || $15 == "H3K4me3-human,_H3K27ac-human" || $15 == "H3K4me3-human,_H3K27ac-human,_CTCF-human"){print $1, $4, $9, $10, $11, $15, $19}' metadata.tsv | sed '1iFile_accession\tDataset_accession\tBiosample_term_name\tBiosample_type\tLife_stage\tTargets\tmd5sum' > 5-group.ccREs.hg19.bigBed.txt
+
+## mouse
+awk 'BEGIN{FS=OFS="\t"}$2=="bigBed_bed3+" && $22=="mm10" && $24=="released" && ($15 == "CTCF-mouse,_H3K27ac-mouse,_H3K4me3-mouse" || $15 == "CTCF-mouse,_H3K4me3-mouse,_H3K27ac-mouse" || $15 == "H3K27ac-mouse,_CTCF-mouse,_H3K4me3-mouse" || $15 == "H3K27ac-mouse,_H3K4me3-mouse" || $15 == "H3K4me3-mouse,_H3K27ac-mouse"){print $1, $4, $9, $10, $11, $15, $19}' metadata.tsv | sed '1iFile_accession\tDataset_accession\tBiosample_term_name\tBiosample_type\tLife_stage\tTargets\tmd5sum' > 5-group.ccREs.mm10.bigBed.txt
+#********
+
+#********
+# 5. prepare folders for bigBed files storage
+mkdir -p bigBed.files/hg19 bigBed.files/mm10
+#********
+
+#********
+# 6. prepare list of Biosamples for
+# different life stages
+
+## hg19 (adult / embryonic / postnatal / young adult)
+for stage in adult embryonic postnatal young_adult; do awk -v stage="$stage" 'BEGIN{FS="\t"}$5==stage{print $3}' 5-group.ccREs.hg19.bigBed.txt | sort -u > /users/rg/bborsari/public_html/enhancers_neural_development/ccREs/hg19/"$stage".biosamples.txt; done 
+
+## mm10 (adult / embryonic / postnatal)
+for stage in adult embryonic postnatal; do awk -v stage="$stage" 'BEGIN{FS="\t"}$5==stage{print $3}' 5-group.ccREs.mm10.bigBed.txt | sort -u > /users/rg/bborsari/public_html/enhancers_neural_development/ccREs/mm10/"$stage".biosamples.txt; done 
+#********
+
+#********
+# 7. download bigBed files
+qsub download.bigBed.job.array.sh
+#********
+
+#********
+# 8. check md5sum
+for j in hg19 mm10; do
+	tail -n+2 5-group.ccREs."$j".bigBed.txt | cut -f1 | while read file; do 
+		md5sum bigBed.files/"$j"/"$file".bigBed >> "$j".md5sum.txt; 
+	done
+	paste <(tail -n+2 5-group.ccREs."$j".bigBed.txt) "$j".md5sum.txt | awk '$7==$8{n++}END{print n}'
+done
+#********
+
+#********
+# 9. prepare folders for human and mouse analyses
+mkdir -p hg19/adult hg19/embryo hg19/TSS.bedfiles mm10/adult mm10/embryo mm10/TSS.bedfiles
+#********
