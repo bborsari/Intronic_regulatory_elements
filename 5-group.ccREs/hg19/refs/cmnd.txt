@@ -1,0 +1,32 @@
+#*******
+# 1. generate intron gtf file
+awk '$3=="exon"' gencode.v19.annotation.gtf | sort -k12,12 -k4,4n -k5,5n | awk -v fldgn=10 -v fldtr=12 -f /users/rg/dga
+rrido/bin/sdjebali/make_introns.awk > gencode.v19.introns.gtf
+#*******
+
+#*******
+# 2. classify introns
+~bborsari/bin/classify.introns.sh gencode.v19.introns.gtf > gencode.v19.classified.introns.bed
+#*******
+
+#*******
+# 3. update start coordinates to bed format
+awk 'BEGIN{FS=OFS="\t"}{$2=$2-1; print $0}' gencode.v19.classified.introns.bed > tmp; mv tmp gencode.v19.classified.int
+rons.bed
+#*******
+
+#*******
+# 4. generate intron bed file
+awk 'BEGIN{FS=OFS="\t"}{print $1, $2, $3, $7, "0", $4, $8}' gencode.v19.classified.introns.bed > gencode.v19.introns.be
+d
+#*******
+
+#*******
+# 5. generate exon bed file
+awk '$3=="exon"' gencode.v19.annotation.gtf | cut -d ";" -f1,2 | awk 'BEGIN{OFS="\t"}{print $1, $4, $5, $12, 0, $7, $10}' | sed 's/\"//g;s/;//g' | awk 'BEGIN{FS=OFS="\t"}{$2=$2-1;print $0}' > gencode.v19.exons.bed
+#*******
+
+#*******
+# 6. generate all genes bed file (gene body coordinates)
+awk '$3=="gene"' gencode.v19.annotation.gtf | cut -d ";" -f1 | awk 'BEGIN{OFS="\t"}{print $1, $4, $5, $10, 0, $7, $10}' | sed 's/\"//g' | awk 'BEGIN{FS=OFS="\t"}{$2=$2-1;print $0}' > gencode.v19.all.genes.gene.body.bed
+#*******
