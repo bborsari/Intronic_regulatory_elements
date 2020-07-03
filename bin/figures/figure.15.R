@@ -21,19 +21,19 @@ library(cowplot)
 my.function <- function(my.folder, my.table, my.xlab="") {
   
   # 1. read dataframes
-  common.m <- read.table(paste0("intersection.with.adult/", my.folder, ".common.", my.table), h=F, sep="\t")
+  common.m <- read.table(paste0("intersection.with.adult/intergenic/", my.folder, ".common.", my.table), h=F, sep="\t")
   colnames(common.m) <- c("region", "active_in_n_adult_tissues")
   common.m$group <- "common"
   
-  differentiated_tissues.m <- read.table(paste0("intersection.with.adult/", my.folder, ".differentiated_tissues.", my.table), h=F, sep="\t")
+  differentiated_tissues.m <- read.table(paste0("intersection.with.adult/intergenic/", my.folder, ".differentiated_tissues.", my.table), h=F, sep="\t")
   colnames(differentiated_tissues.m) <- c("region", "active_in_n_adult_tissues")
   differentiated_tissues.m$group <- "differentiated_tissues"
   
-  neural_progenitors.m <- read.table(paste0("intersection.with.adult/", my.folder, ".neural_progenitors.", my.table), h=F, sep="\t")
+  neural_progenitors.m <- read.table(paste0("intersection.with.adult/intergenic/", my.folder, ".neural_progenitors.", my.table), h=F, sep="\t")
   colnames(neural_progenitors.m) <- c("region", "active_in_n_adult_tissues")
   neural_progenitors.m$group <- "neural_progenitors"
   
-  stem_cells.m <- read.table(paste0("intersection.with.adult/", my.folder, ".stem_cells.", my.table), h=F, sep="\t")
+  stem_cells.m <- read.table(paste0("intersection.with.adult/intergenic/", my.folder, ".stem_cells.", my.table), h=F, sep="\t")
   colnames(stem_cells.m) <- c("region", "active_in_n_adult_tissues")
   stem_cells.m$group <- "stem_cells"
   
@@ -64,7 +64,7 @@ my.function <- function(my.folder, my.table, my.xlab="") {
           axis.line = element_line(colour = "black")) +
     scale_fill_manual(values = palette) +
     guides(fill=F)
-
+  
   return(p)
   
 }
@@ -87,6 +87,6 @@ lop[[2]] <- my.function(my.folder = "analysis", my.table = "merged.table.subset.
                         my.xlab = "n. of adult tissues in which the embryonic ELS are active")
 
 # 4. plot
-pdf("~/public_html/enhancers_neural_development/plots/fig.11.pdf", width = 13, height = 8)
+pdf("~/public_html/enhancers_neural_development/plots/fig.15.intergenic.pdf", width = 13, height = 8)
 plot_grid(plotlist = lop, nrow=2, ncol=1, align="v")
 dev.off()

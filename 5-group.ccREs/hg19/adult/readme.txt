@@ -7,3 +7,8 @@
 
 # run cmnd.txt 12-14
 qsub -q rg-el7 -N intersection.introns.exons.intergenic.adult -m bea -M beatrice.borsari@crg.eu -cwd -o /no_backup/rg/bborsari/projects/enhancers_neural_development/logs/$JOB_NAME -e /no_backup/rg/bborsari/projects/enhancers_neural_development/errors/$JOB_NAME cmnd.txt
+
+
+#*****Mar 2nd, 2020********
+
+# run cmnd.txt 15-19 manually
