@@ -1,4 +1,4 @@
-.libPaths("/nfs/users2/rg/bborsari/software/R-3.5.2/library")
+#.libPaths("/nfs/users2/rg/bborsari/software/R-3.5.2/library")
 
 
 #************
@@ -25,7 +25,7 @@ library(ggpubr)
 
 
 # 1. define working directory
-setwd("/no_backup/rg/bborsari/projects/enhancers_neural_development/5-group.ccREs/hg19/adult")
+# setwd("/no_backup/rg/bborsari/projects/enhancers_neural_development/5-group.ccREs/hg19/adult")
 
 
 # 2. groups' vector
@@ -33,8 +33,8 @@ groups <- c("blood", "iPS", "fibro_myoblasts", "muscle", "brain", "common")
 
 
 # 3. read df with number of introns per gene
-w <- read.table("gencode.v19.number.introns.per.gene.tsv", h=F, sep="\t")
-
+# w <- read.table("gencode.v19.number.introns.per.gene.tsv", h=F, sep="\t")
+w <- read.table(url("https://public-docs.crg.es/rguigo/Data/bborsari/enhancers_neural_development/ccREs/hg19/gencode.v19.number.introns.per.gene.tsv"), h=F, sep="\t")
 
 # 4. read dfs of genes intersecting with group-specific ccREs
 # and compute number of introns per gene
@@ -42,7 +42,10 @@ x <- data.frame(stringsAsFactors = F)
 
 for ( i in 1:6 ) {
   
-  m <- read.table(paste0("group.ELS/", groups[i], "/", groups[i], ".genes.txt"),
+  # m <- read.table(paste0(groups[i], "/", groups[i], ".genes.txt"),
+  #                 stringsAsFactors = F, h=F, sep="\t")
+  
+  m <- read.table(url(paste0("https://public-docs.crg.es/rguigo/Data/bborsari/enhancers_neural_development/ccREs/hg19/adult/group.ELS/", groups[i], "/", groups[i], ".genes.txt")),
                   stringsAsFactors = F, h=F, sep="\t")
   m <- merge(m, w, by.x = "V4", by.y = "V1")
   m$group <- groups[i]
@@ -85,8 +88,8 @@ corr.v <- paste0("Pearson's R: ",
 
 
 # 7. make plot
-pdf("~/public_html/enhancers_neural_development/figures.paper/fig.S2a.pdf",
-    width = 4.5, height=3.5)
+# pdf("~/public_html/enhancers_neural_development/figures.paper/fig.S2a.pdf",
+#     width = 4.5, height=3.5)
 ggplot(x, aes(x=group, y=n_introns, fill=group)) +
   geom_violin(alpha=.65, aes(color = group)) +
   geom_boxplot(width=0.3, alpha = .85) +
@@ -119,4 +122,4 @@ ggplot(x, aes(x=group, y=n_introns, fill=group)) +
   guides(fill=F, color=F) +
   ylab("n") +
   labs(title = "number of introns per gene")
-dev.off()
+# dev.off()
