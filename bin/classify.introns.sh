@@ -1,3 +1,6 @@
+# Adapted from previous script
+# by A. Breschi
+
 
 if [[ $# < 1 ]]; then
 	echo "USAGE: $0 <gtf>"

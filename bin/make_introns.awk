@@ -1,3 +1,5 @@
+# Author: S. Djebali
+
 # ~sdjebali/Awk/make_introns.awk
 
 # starts from an ordered set of exons from transcripts in gtf (order = tr, beg, end) (this file can have additional items)
