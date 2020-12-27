@@ -42,6 +42,7 @@ metadata$Biosample_term_name <- factor(metadata$Biosample_term_name,
                                                   "HUES64",
                                                   "HUES48",
                                                   "H9",
+                                                  "H9.1",
                                                   "H1",
                                                   "neuroepithelial_stem_cell",
                                                   "radial_glial_cell",
@@ -69,6 +70,7 @@ m <- m[, metadata$File_accession]
 stopifnot(identical(colnames(m), metadata$File_accession))
 colnames(m) <- metadata$Biosample_term_name
 
+metadata[metadata$File_accession == "ENCFF505OUS", "Biosample_term_name"] <- "H9.1"
 
 
 # 4. groups' vector
@@ -101,7 +103,7 @@ df <- data.frame(stringsAsFactors = F)
 for ( i in 1:3 ) {
   
   tmp <- m[x[[i]], -c(groups2[[i]])]
-  
+
   y <- c()
   for ( j in 1:nrow(tmp) ){
     
@@ -112,7 +114,7 @@ for ( i in 1:3 ) {
       
     } else {
       
-      y <- c(y, "within-group")
+      y <- c(y, "within-cluster")
       
     }
     
@@ -133,35 +135,35 @@ for ( i in 1:3 ) {
 palette = c("stem_cells" = "gray",
             "differentiated_tissues" = "#41ab5d",
             "neural_progenitors" = "gold",
-            "within-group" = "#525252")
+            "within-cluster" = "#525252")
 
 
 # 9. make plot
 df$group <- factor(df$group, levels = c("stem_cells", "differentiated_tissues", "neural_progenitors"))
-df$y <- factor(df$y, levels = c("stem_cells", "neural_progenitors", "differentiated_tissues", "within-group"))
+df$y <- factor(df$y, levels = c("stem_cells", "neural_progenitors", "differentiated_tissues", "within-cluster"))
 
 
 pdf("~/public_html/enhancers_neural_development/figures.paper/fig.S3a.pdf",
-    height = 4, width = 5)
+    height = 5, width = 8)
 ggplot(df, aes(x=group, y=Freq, fill=y)) +
   geom_bar(stat="identity", position="fill") +
   scale_fill_manual(values = palette) +
   theme_bw() +
-  theme(axis.title = element_text(size =12),
-        axis.text.y = element_text(size = 10),
-        axis.text.x = element_text(size = 10, angle = 30, vjust = .6),
+  theme(axis.title = element_text(size =20),
+        axis.text.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20, angle = 30, vjust = .6),
         panel.border = element_rect(color="black"), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         strip.background.y = element_blank(),
-        strip.text.y = element_text(size=13, angle = 0),
-        legend.text = element_text(size=10),
+        strip.text.y = element_text(size=20, angle = 0),
+        legend.text = element_text(size=20),
         legend.title = element_blank(),
         plot.title = element_blank()) +
   scale_y_continuous(labels = percent_format()) +
-  ylab("frequency") +
-  xlab("groups") +
-  scale_x_discrete(labels = c("stem\ncells", "neural\nprogenitors", "differentiated\ntissues"))
+  ylab("proportion (%)") +
+  xlab("groups")+
+  scale_x_discrete(labels = c("stem\ncells", "differentiated\ntissues", "neural\nprogenitors"))
 
 dev.off()

@@ -1,7 +1,6 @@
 #*******
 # 1. generate intron gtf file
-awk '$3=="exon"' gencode.v19.annotation.gtf | sort -k12,12 -k4,4n -k5,5n | awk -v fldgn=10 -v fldtr=12 -f /users/rg/dga
-rrido/bin/sdjebali/make_introns.awk > gencode.v19.introns.gtf
+awk '$3=="exon"' gencode.v19.annotation.gtf | sort -k12,12 -k4,4n -k5,5n | awk -v fldgn=10 -v fldtr=12 -f /users/rg/dgarrido/bin/sdjebali/make_introns.awk > gencode.v19.introns.gtf
 #*******
 
 #*******
@@ -11,14 +10,12 @@ rrido/bin/sdjebali/make_introns.awk > gencode.v19.introns.gtf
 
 #*******
 # 3. update start coordinates to bed format
-awk 'BEGIN{FS=OFS="\t"}{$2=$2-1; print $0}' gencode.v19.classified.introns.bed > tmp; mv tmp gencode.v19.classified.int
-rons.bed
+awk 'BEGIN{FS=OFS="\t"}{$2=$2-1; print $0}' gencode.v19.classified.introns.bed > tmp; mv tmp gencode.v19.classified.introns.bed
 #*******
 
 #*******
 # 4. generate intron bed file
-awk 'BEGIN{FS=OFS="\t"}{print $1, $2, $3, $7, "0", $4, $8}' gencode.v19.classified.introns.bed > gencode.v19.introns.be
-d
+awk 'BEGIN{FS=OFS="\t"}{print $1, $2, $3, $7, "0", $4, $8}' gencode.v19.classified.introns.bed > gencode.v19.introns.bed
 #*******
 
 #*******

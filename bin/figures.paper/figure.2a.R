@@ -25,9 +25,19 @@ setwd("/no_backup/rg/bborsari/projects/enhancers_neural_development/5-group.ccRE
 m <- read.table("group.ELS/summary.stats.tsv", h=F, sep="\t")
 colnames(m) <- c("total", "fraction", "type", "group")
 
+
+# 3. read number of ELSs that are both intronic and exonic
+x <- read.table("group.ELS/intronic_and_exonic.ELSs.tsv", h=F, sep="\t")
+colnames(x) <- c("total", "fraction", "type", "group")
+
+
+# 4. subtract from intronic and exonic those ELSs that are both intronic and exonic
+m$fraction <- ifelse(m$type == "exonic", m$fraction - x$fraction, m$fraction)
+
 m$percentage <- (m$fraction / m$total) * 100
 m$group <- factor(m$group, levels = c("common", "iPS", "fibro_myoblasts",
                                       "blood", "muscle", "brain"))
+
 m$type <- gsub("intronic", "introns", m$type)
 m$type <- gsub("exonic", "exons", m$type)
 m$type <- gsub("intergenic", "intergenic regions", m$type)
@@ -44,26 +54,44 @@ palette = c("brain" = "#EEEE00",
 
 
 
+round_percent <- function(x) { 
+  x <- x/sum(x)*100  # Standardize result
+  res <- floor(x)    # Find integer bits
+  rsum <- sum(res)   # Find out how much we are missing
+  if(rsum<100) { 
+    # Distribute points based on remainders and a random tie breaker
+    o <- order(x%%1, sample(length(x)), decreasing=TRUE) 
+    res[o[1:(100-rsum)]] <- res[o[1:(100-rsum)]]+1
+  } 
+  res 
+}
+
+round_percent(m[m$group=="blood", "fraction"] / m[m$group=="blood", "total"])
+round_percent(m[m$group=="common", "fraction"] / m[m$group=="common", "total"])
+
 pdf("~/public_html/enhancers_neural_development/figures.paper/fig.2a.pdf", 
-    width = 9, height = 4)
+    width = 12, height = 5)
 ggplot(m, aes(x=group, y=percentage, fill=group)) +
   geom_bar(stat = "identity", color = "black", alpha = .8) +
-  geom_text(stat='identity', aes(label = paste0(round(percentage, 1), "%")), vjust=-1) +
+  geom_text(stat='identity', aes(label = round(percentage, 1)), vjust=-1,
+            size = 5.5) +
   facet_grid(~type) +
   theme_bw() +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 10),
+        axis.text.y = element_text(size = 20),
         axis.ticks.x = element_blank(),
-        axis.title.y = element_text(size = 15),
-        strip.text.x = element_text(size = 15),
+        axis.title.y = element_text(size = 20),
+        strip.text.x = element_text(size = 20),
         strip.background.x = element_blank(),
         legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20),
         panel.border = element_rect(color="black"), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black")) +
-  ylab("% of ELSs") +
+  ylab("proportion of ELSs (%)") +
   scale_fill_manual(values = palette) +
   ylim(0,100)
 dev.off()

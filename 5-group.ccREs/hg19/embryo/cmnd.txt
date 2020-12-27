@@ -167,3 +167,9 @@ for embryo_group in common differentiated_tissues neural_progenitors stem_cells;
 	done
 done	
 #******
+
+#*******
+# 20. compute number of ELSs 
+# that are both intronic and exonic
+cut -f1 tissues.groups.tsv | while read group; do a=$(grep -Ff group.ELS/"$group"/"$group".specific.ELS.distal.2Kb.exonic.bed group.ELS/"$group"/"$group".specific.ELS.distal.2Kb.intronic.bed | wc -l); b=$(cat group.ELS/"$group"/"$group".specific.ELS.distal.2Kb.bed | wc -l); echo -e "$b\t$a\texonic_intronic\t$group"; done > group.ELS/intronic_and_exonic.ELSs.tsv
+#*******

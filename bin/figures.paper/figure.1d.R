@@ -118,7 +118,7 @@ for ( i in 1:5 ) {
       
     } else {
       
-      y <- c(y, "within-group")
+      y <- c(y, "within-cluster")
       
     }
     
@@ -141,34 +141,38 @@ palette = c("brain" = "#EEEE00",
             "muscle" = "#9e9ac8",
             "iPS" ="gray",
             "fibro_myoblasts" = "lightblue",
-            "within-group" = "#525252")
+            "within-cluster" = "#525252")
 
 
 # 9. make plot
 df$group <- factor(df$group, levels = c("iPS", "fibro_myoblasts", "brain", "blood", "muscle"))
-df$y <- factor(df$y, levels = c("iPS", "blood", "brain", "fibro_myoblasts", "muscle", "within-group"))
+df$y <- factor(df$y, levels = c("iPS", "blood", "brain", "fibro_myoblasts", "muscle", "within-cluster"))
 
 
-pdf("~/public_html/enhancers_neural_development/figures.paper/fig.1d.pdf",
-    height = 4, width = 5)
-ggplot(df, aes(x=group, y=Freq, fill=y)) +
+p <- ggplot(df[df$group != "iPS" & df$group != "fibro_myoblasts", ], aes(x=group, y=Freq, fill=y)) +
   geom_bar(stat="identity", position="fill") +
   scale_fill_manual(values = palette) +
   theme_bw() +
-  theme(axis.title = element_text(size =12),
-        axis.text.y = element_text(size = 10),
-        axis.text.x = element_text(size = 10, angle = 30, vjust = .5),
+  theme(axis.title = element_text(size =20),
+        axis.text.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20, angle = 30, vjust = .5),
         panel.border = element_rect(color="black"), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         strip.background.y = element_blank(),
-        strip.text.y = element_text(size=13, angle = 0),
-        legend.text = element_text(size=10),
+        legend.text = element_text(size=20),
         legend.title = element_blank(),
         plot.title = element_blank()) +
   scale_y_continuous(labels = percent_format()) +
-  ylab("frequency") +
-  xlab("groups")
+  ylab("proportion (%)") +
+  xlab("clusters")
 
+leg <- get_legend(p)
+
+p <- p + guides(fill=F)
+
+pdf("~/public_html/enhancers_neural_development/figures.paper/fig.1d.pdf",
+    height = 7.5, width = 4)
+plot_grid(plotlist = list(p, leg), nrow=2)
 dev.off()

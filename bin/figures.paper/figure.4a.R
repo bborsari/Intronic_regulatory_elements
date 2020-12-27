@@ -88,39 +88,47 @@ corr.s <- paste0("Spearman's R: ",
 pdf("~/public_html/enhancers_neural_development/figures.paper/fig.4a.pdf",
     width = 4, height=3.5)
 ggplot() +
-  geom_point(data = p2, aes(x=n_samples, y=intergenic), color = "black") +
+  geom_point(data = p2, aes(x=n_samples, y=intergenic), color = "black", size = 3) +
   # geom_point(data = p, aes(x=n_samples, y=intergenic), color = "blue", alpha = .6, size = 1.5) +
   xlab("number of samples") +
   ylab("intergenic ELSs (%)") +
   theme_bw() +
-  theme(axis.title = element_text(size=12),
-        axis.text.y = element_text(size=12),
-        axis.text.x = element_text(size=12),
+  theme(axis.title = element_text(size=20),
+        axis.text.y = element_text(size=20),
+        axis.text.x = element_text(size=20),
         panel.border = element_rect(color="black"), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black")) +
-  scale_y_continuous(labels = percent_format(), limits = c(0,1)) +
-  annotate(geom="text", x=12, y=0.95, label=corr.p,
-           color="black") +
-  annotate(geom="text", x=12.25, y=0.85, label=corr.s,
-           color="black") 
+  scale_y_continuous(labels = percent_format(), limits = c(0,1))
+  # annotate(geom="text", x=12, y=0.95, label=corr.p,
+  #          color="black") +
+  # annotate(geom="text", x=12.25, y=0.85, label=corr.s,
+  #          color="black") 
 dev.off()
 
 
+png("~/public_html/enhancers_neural_development/figures.paper/fig.4a.png",
+    width = 4, height=3.5, units = "in", res=300)
+ggplot() +
+  geom_point(data = p2, aes(x=n_samples, y=intergenic), color = "black", size = 3) +
+  # geom_point(data = p, aes(x=n_samples, y=intergenic), color = "blue", alpha = .6, size = 1.5) +
+  xlab("number of samples") +
+  ylab("intergenic ELSs (%)") +
+  theme_bw() +
+  theme(axis.title = element_text(size=20),
+        axis.text.y = element_text(size=20),
+        axis.text.x = element_text(size=20),
+        panel.border = element_rect(color="black"), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_y_continuous(labels = percent_format(), limits = c(0,1))
+# annotate(geom="text", x=12, y=0.95, label=corr.p,
+#          color="black") +
+# annotate(geom="text", x=12.25, y=0.85, label=corr.s,
+#          color="black") 
+dev.off()
 
 
-# ggplot(m, aes(x=as.factor(bins), fill=group)) +
-#   geom_bar(position="fill") +
-#   xlab("number of samples") +
-#   ylab("active ELSs (%)") +
-#   theme_bw() +
-#   theme(axis.title = element_text(size=12),
-#         axis.text.y = element_text(size=12),
-#         axis.text.x = element_text(size=10, angle = 30, vjust = .5),
-#         panel.border = element_rect(color="black"), 
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(), 
-#         axis.line = element_line(colour = "black")) +
-#   scale_y_continuous(labels = percent_format())
 

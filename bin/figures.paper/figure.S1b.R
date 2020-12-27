@@ -135,7 +135,7 @@ palette = c("brain" = "#EEEE00",
 y <- y[y$group1 != y$group2, ]
 
 pdf("~/public_html/enhancers_neural_development/figures.paper/fig.S1b.pdf",
-    height = 5, width = 5)
+    height = 7.5, width = 8)
 ggplot(y[y$n > 0, ], aes(x=n, fill=group2)) +
   geom_bar(position = position_dodge2(width = 0.9, preserve = "single")) +
   facet_grid(group1~., scales = "free_y") +
@@ -143,20 +143,22 @@ ggplot(y[y$n > 0, ], aes(x=n, fill=group2)) +
                    labels = as.character(seq(0, 8, 1))) +
   scale_fill_manual(values = palette) +
   theme_bw() +
-  theme(axis.title = element_text(size =10),
-        axis.text = element_text(size = 10),
+  theme(axis.title = element_text(size =20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y = element_text(size = 18),
         panel.border = element_rect(color="black"), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         strip.background.y = element_blank(),
-        strip.text.y = element_text(size=12, angle = 0),
-        legend.text = element_text(size=10),
+        strip.text.y = element_text(size=20, angle = 0),
+        legend.text = element_text(size=20),
         legend.position = "bottom",
         legend.title = element_blank(),
-        plot.title = element_blank()) +
+        plot.title = element_text(size=20)) +
   xlab("Number of samples") +
-  ylab("Number of active ELSs")
+  ylab("Number of active ELSs") +
+  labs(title="Sharing of tissue-active ELSs among clusters")
 dev.off()
 
 

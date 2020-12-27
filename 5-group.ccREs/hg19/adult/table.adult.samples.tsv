@@ -1,0 +1,60 @@
+1	#FF00BB	DOHH2	cell line	-	ENCFF980MYQ
+2	#FF00BB	SU-DHL-6	cell line	-	ENCFF772BBT
+3	#FF00BB	OCI-LY7	cell line	-	ENCFF250ICR
+4	#FF00BB	OCI-LY1	cell line	-	ENCFF625TTV
+5	#FF00BB	B cell	primary cell	blood	ENCFF379TAE
+6	#FF00BB	Karpas-422	cell line	-	ENCFF106UHI
+7	#FF00BB	OCI-LY3	cell line	-	ENCFF281DXP
+8	#FF00BB	GM12878	cell line	-	ENCFF895ZSL
+9	#FF00BB	T-cell	primary cell	blood	ENCFF098NHL
+10	#FF00BB	natural killer cell	primary cell	blood	ENCFF529UWB
+11	#FF00BB	peripheral blood mononuclear cell	primary cell	blood	ENCFF509DPX
+12	#FF00BB	MM.1S	cell line	-	ENCFF971FPO
+13	#FF00BB	Loucy	cell line	-	ENCFF565KAA
+14	#FF00BB	CD14-positive monocyte	primary cell	blood	ENCFF967MJU
+15	#778855	spleen	tissue	-	ENCFF821ESA
+16	#EEBB77	mucosa of rectum	tissue	-	ENCFF759YFL
+17	#FF00BB	K562	cell line	-	ENCFF095YVI
+18	#AAEEFF	GM23248	cell line	-	ENCFF298RII
+19	#DDDDDD	PC-3	cell line	-	ENCFF523DDS
+20	#FF66FF	HeLa-S3	cell line	-	ENCFF477PXA
+21	#000000	ACC112	cell line	-	ENCFF618KHO
+22	#AAEEFF	fibroblast of lung	primary cell	fibro/myoblasts	ENCFF495RTY
+23	#AAEEFF	skeletal muscle myoblast	primary cell	fibro/myoblasts	ENCFF037UZZ
+24	#AAEEFF	myotube	in vitro differentiated cells	fibro/myoblasts	ENCFF120MMC
+25	#EEBB77	HCT116	cell line	-	ENCFF664XAH
+26	#33CCCC	MCF-7	cell line	-	ENCFF446ZBB
+27	#FFDD99	stomach	tissue	-	ENCFF992HIZ
+28	#995522	pancreas	tissue	-	ENCFF681HOL
+29	#995522	body of pancreas	tissue	-	ENCFF768JUC
+30	#AABB66	right lobe of liver	tissue	-	ENCFF476MEG
+31	#FF5555	aorta	tissue	-	ENCFF178GDW
+32	#FF5555	thoracic aorta	tissue	-	ENCFF257XAQ
+33	#FFAAFF	ovary	tissue	-	ENCFF586NXH
+34	#006600	thyroid gland	tissue	-	ENCFF296SZK
+35	#552200	esophagus	tissue	-	ENCFF442HYL
+36	#AAAAFF	muscle layer of duodenum	tissue	muscle	ENCFF862BGI
+37	#AAAAFF	gastrocnemius medialis	tissue	-	ENCFF322RAX
+38	#FF6600	subcutaneous abdominal adipose tissue	tissue	muscle	ENCFF725QLM
+39	#AAAAFF	rectal smooth muscle tissue	tissue	muscle	ENCFF093MDL
+40	#FF5599	vagina	tissue	muscle	ENCFF904XYE
+41	#AAAAFF	stomach smooth muscle	tissue	muscle	ENCFF726JTT
+42	#AAAAFF	skeletal muscle tissue	tissue	muscle	ENCFF311MNY
+43	#9900FF	right cardiac atrium	tissue	muscle	ENCFF278RUJ
+44	#AAAAFF	gastrocnemius medialis	tissue	muscle	ENCFF863OGG
+45	#995522	endocrine pancreas	tissue	-	ENCFF055CJM
+46	#99FF00	lung	tissue	-	ENCFF598QTT
+47	#AABB66	liver	tissue	-	ENCFF645PQQ
+48	#bdbdbd	GM23338	cell line	-	ENCFF651YUN
+49	#EEBB77	mucosa of rectum	tissue	-	ENCFF403IPC
+50	#bdbdbd	iPS-18a	cell line	iPSC	ENCFF920QRH
+51	#EEBB77	colonic mucosa	tissue	-	ENCFF867TJN
+52	#bdbdbd	iPS-20b	cell line	iPSC	ENCFF231KWX
+53	#EEEE00	bipolar neuron	in vitro differentiated cells	-	ENCFF045GKW
+54	#EEEE00	middle frontal area 46	tissue	brain	ENCFF070EXF
+55	#EEEE00	caudate nucleus	tissue	brain	ENCFF508GKP
+56	#EEEE00	angular gyrus	tissue	brain	ENCFF942KAC
+57	#EEEE00	layer of hippocampus	tissue	brain	ENCFF159NZA
+58	#EEEE00	substantia nigra	tissue	brain	ENCFF233VRB
+59	#EEEE00	temporal lobe	tissue	brain	ENCFF810IQU
+60	#EEEE00	cingulate gyrus	tissue	brain	ENCFF494WCN
